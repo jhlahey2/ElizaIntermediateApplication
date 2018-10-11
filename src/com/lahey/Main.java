@@ -1,6 +1,5 @@
 package com.lahey;
 import java.util.Scanner;
-
 /**
  * @author Jack Lahey
  *
@@ -61,11 +60,15 @@ public class Main {
         Eliza eliza = new Eliza();
 
         System.out.print("Good day. What is your problem? ");
-        do{
-            System.out.print("Enter your response here or Q to quit: ");
+        do {
+            System.out.print("Enter your response here or Q to quit: \n");
+
             sInputString = scanInput.nextLine();
 
-            System.out.println(eliza.processResponse(sInputString));
+            if (!(sInputString.equalsIgnoreCase(sQuitQ))) {
+
+                System.out.println(eliza.processResponse(sInputString));
+            }
 
         }while( !(sInputString.equalsIgnoreCase(sQuitString)) && !(sInputString.equalsIgnoreCase(sQuitQ)));
 

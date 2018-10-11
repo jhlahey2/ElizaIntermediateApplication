@@ -1,4 +1,7 @@
 package com.lahey;
+/**
+ * @author jack lahey
+ */
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -14,30 +17,28 @@ public class Eliza {
 
     public Eliza()
     {
-        initReplacementHash();
-         initPrependHash();
+        initReplacementMap();
+        initPrependMap();
     }
 
-    private void initReplacementHash(){
-        String sFirstWord = "";
-        String sSecondWord = "";
+    private void initReplacementMap(){
+        String sKey = "";
+        String sValue = "";
 
-        System.out.println("Working Directory = " + System.getProperty("user.dir"));
+        //display for testing
+//        System.out.println("Working Directory = " + System.getProperty("user.dir"));
 
-        /********************************************************
-         * Get replacement pairs from file and load into hashmap
-         */
-        try {
+       try {
 
             Scanner scan  = new Scanner(wordFile);
 
             while (scan.hasNextLine()) {
 
-                sFirstWord = scan.next().toLowerCase();
-                sSecondWord = scan.next().toLowerCase();
+                sKey = scan.next().toLowerCase();
+                sValue = scan.next().toLowerCase();
                 scan.nextLine();
 
-                replaceWordMap.put(sFirstWord, sSecondWord);
+                replaceWordMap.put(sKey, sValue);
             }
             scan.close();
         }
@@ -45,32 +46,52 @@ public class Eliza {
             e.printStackTrace();
         }//end try catch
 
-        Set set2 = replaceWordMap.entrySet();
-        Iterator iterator2 = set2.iterator();
-        while(iterator2.hasNext()) {
-            Map.Entry mentry2 = (Map.Entry) iterator2.next();
-            System.out.print("Key is: " + mentry2.getKey() + " & Value is: ");
-            System.out.println(mentry2.getValue());
+        //display for testing
+//     Set set1 = replaceWordMap.entrySet();
+//     Iterator iterator1 = set1.iterator();
+//     while(iterator1.hasNext()) {
+//         Map.Entry mentry1 = (Map.Entry) iterator1.next();
+//         System.out.print("Key is: " + mentry1.getKey() + " & Value is: ");
+//         System.out.println(mentry1.getValue());
+//        }//end while(iterator1.hasNext())
+//        System.out.println("\n");
+//
+    }//end private void initReplacementMap()
+
+
+    private void initPrependMap() {
+        String sKey = "";
+        String sValue = "";
+
+        try {
+
+            Scanner scan  = new Scanner(prependFile);
+
+            while (scan.hasNextLine()) {
+
+                sKey = scan.next().toLowerCase();
+                sValue = scan.nextLine().substring(1); //.toLowerCase();
+
+                prependMap.put(sKey, sValue);
+            }
+            scan.close();
         }
+        catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }//end try catch
 
-    }//end private void initReplacementHash()
+        //display for testing
+//        Set set1 = prependMap.entrySet();
+//        Iterator iterator1 = set1.iterator();
+//        while(iterator1.hasNext()) {
+//            Map.Entry mentry1 = (Map.Entry) iterator1.next();
+//            System.out.print("Key is: " + mentry1.getKey() + " & Value is: ");
+//            System.out.println(mentry1.getValue());
+//        }//end while(iterator1.hasNext())
+//        System.out.println("\n");
 
+    }//end private void initPrependMap()
 
-    private void initPrependHash() {
-
-        System.out.println("Init prepend hash");
-
-    }//end private void initPrependHash()
-
-//    public  String prependReply(String sReply) {
-//
-//            StringBuffer strBuff = new StringBuffer();
-//
-//        //find appropriate prepend and concat
-//
-//        return strBuff.toString();
-//
-//    }//end private void initPrependHash()
 
     public String processResponse(String str) {
         ArrayList<String> wordList = new ArrayList<String>();
@@ -79,37 +100,44 @@ public class Eliza {
 
         for (String word : str.split(" ")) {
 
-            wordList.add(word);
+            wordList.add(word.toLowerCase());
         }
 
+        //find replacement words from replacment word file
         for (String word : wordList) {
 
             if( replaceWordMap.containsKey(word))
             {
                 word = replaceWordMap.get(word);
+                if(word.equalsIgnoreCase("I")){
+                    word = word.toUpperCase();
+                }
             }
             strBuff.append(word);
             strBuff.append(" ");
-        }
+        }//end for (String word : wordList)
 
-        //prepend the buffer
 
-        prependBuffer(strBuff);
+        String prependString = "I understand. You feel that";
 
+
+        //find prepend from map
+        for (String word : wordList) {
+
+            if( prependMap.containsKey(word)) {
+                prependString = prependMap.get(word);
+            }
+
+        }//end for (String word : wordList)
+
+        strBuff.insert(0 , prependString + " ");
 
         strBuff.append("\b.\n");
         char chTemp = Character.toUpperCase(strBuff.charAt(0));
         strBuff.setCharAt(0,chTemp);
 
         return strBuff.toString();
+
     }//end public String processRespnse(String str)
-
-    private void prependBuffer(StringBuffer buff){
-
-        String prependString = "You feel that ";
-
-        buff.insert(0 , prependString);
-
-    }
 
 }//end public class Eliza
